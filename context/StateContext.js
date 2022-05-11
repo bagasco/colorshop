@@ -78,6 +78,10 @@ export function StateContext({ children }){
     const setterQuery = (dataTag) => {
         setQuery(dataTag.map(tag=>({ text: tag.title, color: tag.color })));
     }
+    const resetTags = () => {
+        setTagColor(tags.filter(tag=>tag.color));
+        setTagCollection(tags.filter(tag=>!tag.color));
+    }
     return (
         <Context.Provider
             value={{
@@ -118,6 +122,7 @@ export function StateContext({ children }){
                 setterIsLike,
                 loadingCollection,
                 setterQuery,
+                resetTags,
             }}
         >
             {children}

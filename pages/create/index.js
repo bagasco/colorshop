@@ -1,24 +1,24 @@
 import { Container } from "../../components";
 import { Layout } from "../../components/function";
 import Link from 'next/link';
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useStateContext } from "../../context/StateContext";
 import { ChromePicker } from 'react-color';
 import { sanity } from '../../lib/sanity';
 
 export default function CreatePalette(){
-    const [menuActive, setMenuActive] = React.useState(false);
-    const { tagColor, tagCollection, setTagColor, setTagCollection, tags } = useStateContext();
-    const [showTags, setShowTags] = React.useState(false);
-    const [tagsPal, setTagsPal] = React.useState([]);
-    const [colorPalette, setColorPalette] = React.useState({ c1: '#BBBBBB', c2: '#CCCCCC', c3: '#DDDDDD', c4: '#EEEEEE' });
-    const [colorPicker, setColorPicker] = React.useState('#ddd');
-    const [showPicker, setShowPicker] = React.useState(false);
-    const [activeBg, setActiveBg] = React.useState(null);
-    const [showSubmit, setShowSubmit] = React.useState(false);
-    const [loading, setLoading] = React.useState(false);
-    const [searchVal, setSearchVal] = React.useState('');
+    const [menuActive, setMenuActive] = useState(false);
+    const { tagColor, tagCollection, setTagColor, setTagCollection, tags, resetTags } = useStateContext();
+    const [showTags, setShowTags] = useState(false);
+    const [tagsPal, setTagsPal] = useState([]);
+    const [colorPalette, setColorPalette] = useState({ c1: '#BBBBBB', c2: '#CCCCCC', c3: '#DDDDDD', c4: '#EEEEEE' });
+    const [colorPicker, setColorPicker] = useState('#ddd');
+    const [showPicker, setShowPicker] = useState(false);
+    const [activeBg, setActiveBg] = useState(null);
+    const [showSubmit, setShowSubmit] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [searchVal, setSearchVal] = useState('');
     const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     function generateString(length) {
         let result = ' ';
@@ -117,12 +117,9 @@ export default function CreatePalette(){
         }
         setSearchVal(e.target.value);
     }
-    React.useEffect((setTagCollection=setTagCollection,setTagColor=setTagColor,tags=tags)=>{
-        if (tags) {
-            if (searchVal==='') {
-                setTagColor(tags.filter(tag=>tag.color));
-                setTagCollection(tags.filter(tag=>!tag.color));
-            }
+    useEffect(()=>{
+        if (searchVal==='') {
+            resetTags();
         }
     },[searchVal])
     return (

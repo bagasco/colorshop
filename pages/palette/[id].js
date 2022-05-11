@@ -8,7 +8,7 @@ import moment from "moment";
 import Link from 'next/link';
 
 export default function PaletteView({ palette }){
-    const { collection, setCollection, copy, handleCopy, isLike, setIsLike, setPalettes, setLike, like, setQuery, query, copyHexAndRgb, handleCopyHexAndRgb, updatePalettes, checkQueryEmpty, setterLike } = useStateContext();
+    const { collection, setCollection, copy, handleCopy, isLike, setIsLike, setLike, like, copyHexAndRgb, handleCopyHexAndRgb, updatePalettes, checkQueryEmpty, setterLike } = useStateContext();
     const handleLike = async () => {
         if (isLike.includes(palette._id)) {
             if (like[palette.related.length]>0) {

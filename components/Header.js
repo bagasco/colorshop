@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import { useEffect, useState } from "react";
 import { useStateContext } from "../context/StateContext";
 
 export default function Header(){
-    const [menuActive, setMenuActive] = React.useState(false);
-    const [showFilter, setShowFilter] = React.useState(false);
+    const [menuActive, setMenuActive] = useState(false);
+    const [showFilter, setShowFilter] = useState(false);
     const router = useRouter();
-    const { tagCollection, tagColor, query, setQuery, tags, setTagColor, setTagCollection } = useStateContext();
-    const [searchVal, setSearchVal] = React.useState('');
+    const { tagCollection, tagColor, query, setQuery, tags, setTagColor, setTagCollection, resetTags } = useStateContext();
+    const [searchVal, setSearchVal] = useState('');
     const menuClick = () => {
         setMenuActive(!menuActive);
     }
@@ -55,9 +55,9 @@ export default function Header(){
     const handleSort = (e) => {
         setSearchVal(e.target.value);
         if (e.target.value) {
-            const searchColor = tagColor.map(tag=>tag.slug).filter(text=>text.includes(e.target.value))
+            const searchColor = tagColor.map(tag=>tag.slug).filter(text=>text.includes(e.target.value.toLowerCase()))
             setTagColor(tagColor.filter(tag=>searchColor.includes(tag.slug)));
-            const searchCol = tagCollection.map(tag=>tag.slug).filter(text=>text.includes(e.target.value))
+            const searchCol = tagCollection.map(tag=>tag.slug).filter(text=>text.includes(e.target.value.toLowerCase()))
             setTagCollection(tagCollection.filter(tag=>searchCol.includes(tag.slug)));
             
         }else {
@@ -65,12 +65,9 @@ export default function Header(){
             setTagCollection(tags.filter(tag=>!tag.color));
         }
     }
-    React.useEffect((setTagCollection=setTagCollection,setTagColor=setTagColor,tags=tags)=>{
-        if (tags) {
-            if (searchVal==='') {
-                setTagColor(tags.filter(tag=>tag.color));
-                setTagCollection(tags.filter(tag=>!tag.color));
-            }
+    useEffect(()=>{
+        if (searchVal==='') {
+            resetTags();
         }
     },[searchVal])
     return (
