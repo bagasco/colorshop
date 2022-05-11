@@ -39,7 +39,7 @@ export default function PaletteView({ palette }){
             }).catch(error=>console.log(error))
         }
     }
-    React.useEffect(()=>{
+    function config(){
         if (palette) {
             const palettes = [...palette?.related,palette];
             setPalettes([...palettes]);
@@ -50,6 +50,9 @@ export default function PaletteView({ palette }){
         if (query.length>0) {
             setQuery([]);
         }
+    }
+    React.useEffect((config=config)=>{
+        config();
     },[palette])
     return (
         <Layout title={`Color Palette: ${palette?.color.map(col=>`#${col}`).join(' ')} - Color Shop`}>

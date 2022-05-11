@@ -11,7 +11,7 @@ export default function Home({ palettes }) {
   const { setPalettes, setLike, setLoadingPalettes, tags, setQuery, setTitleRight, setDescriptionRight } = useStateContext();
   const router = useRouter();
   const [title, setTitle] = React.useState('');
-  React.useEffect(()=>{
+  function config(){
     setPalettes(palettes);
     setLike(palettes.map(pal=>pal.like));
     setLoadingPalettes(false);
@@ -23,7 +23,7 @@ export default function Home({ palettes }) {
     const judul = [];
     dataTag.map(q=>q.title).forEach(el=>{
       if (el===dataTag[dataTag.length-1].title && dataTag.length>1) {
-
+  
           judul.push(`and ${el}`);
       }else{
         judul.push(el);
@@ -32,6 +32,9 @@ export default function Home({ palettes }) {
     setTitle(judul.length > 2 ? judul.join(', ') : judul.join(' '));
     setTitleRight(`${judul.length > 2 ? judul.join(', ') : judul.join(' ')} Color Palettes`);
     setDescriptionRight("Find a great color palette from Color Shop's curated collections");
+  }
+  React.useEffect((config=config)=>{
+    config();
   },[palettes])
   return (
     <Layout title={`${title} Color Palettes - Color Shop`}>

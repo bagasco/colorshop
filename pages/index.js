@@ -4,12 +4,10 @@ import React from "react";
 import { sanity } from "../lib/sanity";
 import { getPalettes } from "../lib/query";
 import { useStateContext } from "../context/StateContext";
-import useSWRInfinite from 'swr/infinite';
 
 export default function Home({ palettes }) {
   const { setPalettes, setLike, setLoadingPalettes, query, setQuery, setTitleRight, setDescriptionRight } = useStateContext();
-
-  React.useEffect(()=>{
+  function config(){
     setPalettes(palettes);
     setLoadingPalettes(false);
     setLike(palettes.map(pal=>pal.like));
@@ -18,6 +16,9 @@ export default function Home({ palettes }) {
     if (query.length>0) {
       setQuery([]);
     }
+  }
+  React.useEffect((config=config)=>{
+    config();
   },[])
   return (
     <Layout title="Color Palettes for Designers and Artists - Color Shop">

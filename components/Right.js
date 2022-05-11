@@ -20,7 +20,7 @@ export default function Right(){
             body: JSON.stringify({ _id: id, like: false })
         }).catch(error=>console.log(error))
     }
-    React.useEffect(()=>{
+    function config(){
         if (process.browser) {
             const likePal = localStorage.getItem('myCollection')!=='""' && localStorage.getItem('myCollection')!== null ? JSON.stringify(localStorage.getItem('myCollection').replaceAll('"','').split(',')) : [];
             const dataLike = localStorage.getItem('myCollection') ? JSON.parse(localStorage.getItem('myCollection')).split(',') : [];
@@ -40,6 +40,9 @@ export default function Right(){
                 }
             }
         }
+    }
+    React.useEffect((config=config)=>{
+        config();
     },[palettes])
     return (
         <div className="fixed bg-white divide-y hidden lg:block w-[260px] top-[70px] px-4 right-0">

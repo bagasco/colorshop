@@ -117,7 +117,7 @@ export default function CreatePalette(){
         }
         setSearchVal(e.target.value);
     }
-    React.useEffect(()=>{
+    React.useEffect((setTagCollection=setTagCollection,setTagColor=setTagColor,tags=tags)=>{
         if (searchVal==='') {
             setTagColor(tags.filter(tag=>tag.color));
             setTagCollection(tags.filter(tag=>!tag.color));

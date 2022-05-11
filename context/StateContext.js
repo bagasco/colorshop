@@ -10,8 +10,8 @@ export function StateContext({ children }){
     const [dataLike, setDataLike] = React.useState([]);
     const [palettes, setPalettes] = React.useState([]);
     const [like, setLike] = React.useState([]);
-    const [tagColor, setTagColor] = React.useState(tags.filter(tag=>tag.color));
-    const [tagCollection, setTagCollection] = React.useState(tags.filter(tag=>!tag.color));
+    const [tagColor, setTagColor] = React.useState(tags?.filter(tag=>tag.color));
+    const [tagCollection, setTagCollection] = React.useState(tags?.filter(tag=>!tag.color));
     const [loadingPalettes, setLoadingPalettes] = React.useState(true);
     const [query, setQuery] = React.useState([]);
     const [titleRight, setTitleRight] = React.useState('');

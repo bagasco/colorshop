@@ -17,7 +17,7 @@ export default function Collection(){
             body: JSON.stringify({ _id: palette._id, like: false })
         }).catch(error=>console.log(error))
     }
-    React.useEffect(()=>{
+    function config(){
         const data = localStorage.getItem('myCollection')!=='""' && localStorage.getItem('myCollection')!== null ? JSON.stringify(localStorage.getItem('myCollection').replaceAll('"','').split(',')) : [];
         const like = localStorage.getItem('myCollection') ? JSON.parse(localStorage.getItem('myCollection')).split(',') : [];
         if (like.length>0) {
@@ -40,6 +40,9 @@ export default function Collection(){
         if (query.length>0) {
             setQuery([]);
         }
+    }
+    React.useEffect((config=config)=>{
+        config();
     },[]);
     return (
         <Layout title="My collection of color palettes on Color Shop">
