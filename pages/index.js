@@ -1,24 +1,19 @@
 import { Layout } from "../components/function";
 import { Container, Content, Header, Right, Sidebar } from "../components";
-import React from "react";
+import { useEffect } from "react";
 import { sanity } from "../lib/sanity";
 import { getPalettes } from "../lib/query";
 import { useStateContext } from "../context/StateContext";
 
 export default function Home({ palettes }) {
-  const { setPalettes, setLike, setLoadingPalettes, query, setQuery, setTitleRight, setDescriptionRight } = useStateContext();
-  function config(){
-    setPalettes(palettes);
-    setLoadingPalettes(false);
-    setLike(palettes.map(pal=>pal.like));
-    setTitleRight('Color Palettes for Designers and Artists');
-    setDescriptionRight('Discover the newest hand-picked palettes of Color Shop');
-    if (query.length>0) {
-      setQuery([]);
-    }
-  }
-  React.useEffect((config=config)=>{
-    config();
+  const { updatePalettes, updateLoadingPalettes, setterLike, setterTitleRight, setterDescriptionRight, checkQueryEmpty } = useStateContext();
+  useEffect(()=>{
+    updatePalettes(palettes);
+    setterLike(palettes);
+    updateLoadingPalettes(false);
+    setterTitleRight('Color Palettes for Designers and Artists');
+    setterDescriptionRight('Discover the newest hand-picked palettes of Color Shop');
+    checkQueryEmpty();
   },[])
   return (
     <Layout title="Color Palettes for Designers and Artists - Color Shop">

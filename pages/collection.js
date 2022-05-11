@@ -1,13 +1,10 @@
-import React from "react";
+import { useEffect } from "react";
 import { Container, EmptyCollection, Header, PaletteBox, Sidebar } from "../components";
 import { Layout } from "../components/function";
 import { useStateContext } from "../context/StateContext";
-import { getPaletteCollection } from "../lib/query";
-import { sanity } from "../lib/sanity";
 
 export default function Collection(){
-    const { collection, setCollection, isLike, setIsLike, query, setQuery } = useStateContext();
-    const [loading, setLoading] = React.useState(false);
+    const { collection, setCollection, isLike, setIsLike, loadingCollection, checkQueryEmpty, setterCollection } = useStateContext();
     const handleLike = async (palette) => {
         setIsLike(isLike.filter(data=>data!==palette._id));
         localStorage.setItem('myCollection', isLike.length>1 ?  JSON.stringify(isLike.filter(data=>data!==palette._id).join(',')) : JSON.stringify(isLike.filter(data=>data!==palette._id).join(' ')));
@@ -23,25 +20,10 @@ export default function Collection(){
         if (like.length>0) {
             setIsLike(like);
         }
-        if (collection.length===0) {
-            if (data.length>0) {
-                setLoading(true);
-                sanity.fetch(getPaletteCollection(data))
-                .then(data=>{
-                    setLoading(false);
-                    const dataCol = [];
-                    like.forEach(_id => {
-                        dataCol.push(...data.filter(col=>col._id===_id))
-                    });
-                    setCollection(dataCol);
-                })
-            }
-        }
-        if (query.length>0) {
-            setQuery([]);
-        }
+        setterCollection(data,like);
+        checkQueryEmpty();
     }
-    React.useEffect((config=config)=>{
+    useEffect(()=>{
         config();
     },[]);
     return (
@@ -49,7 +31,7 @@ export default function Collection(){
             <Header/>
             <Container>
                 <Sidebar/>
-                {!loading&&(
+                {!loadingCollection&&(
                 <div className="sm:ml-[200px] pr-3 pl-3 sm:pl-0 lg:pl-8 sm:pr-8 mt-[70px] sm:mt-[90px] divide-y divide-gray-100">
                     <div className="flex justify-between items-center pb-3">
                         <h1 className="font-medium text-lg">My collection</h1>

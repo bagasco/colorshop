@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { useStateContext } from "../context/StateContext";
-import React from 'react';
+import { useEffect } from 'react';
 import { sanity } from "../lib/sanity";
 import { getPaletteCollection } from "../lib/query";
 import { useRouter } from "next/router";
 
 export default function Right(){
     const { pathname } = useRouter();
-    const { setCollection, collection, isLike, setIsLike, palettes, like, setLike, titleRight, descriptionRight } = useStateContext();
+    const { setCollection, collection, isLike, setIsLike, palettes, like, setLike, titleRight, descriptionRight, setterCollection, setterIsLike } = useStateContext();
     const handleRemove = async (id) => {
         setCollection(collection.filter(col=>col._id!==id));
         setIsLike(isLike.filter(like=>like!==id));
@@ -24,24 +24,11 @@ export default function Right(){
         if (process.browser) {
             const likePal = localStorage.getItem('myCollection')!=='""' && localStorage.getItem('myCollection')!== null ? JSON.stringify(localStorage.getItem('myCollection').replaceAll('"','').split(',')) : [];
             const dataLike = localStorage.getItem('myCollection') ? JSON.parse(localStorage.getItem('myCollection')).split(',') : [];
-            if (like.length>0) {
-                setIsLike(dataLike);
-            }
-            if (collection.length===0) {
-                if (likePal.length>0) {
-                    sanity.fetch(getPaletteCollection(likePal))
-                    .then(data=>{
-                        const dataCol = [];
-                        dataLike.forEach(_id => {
-                            dataCol.push(...data.filter(col=>col._id===_id))
-                        });
-                        setCollection(dataCol);
-                    })
-                }
-            }
+            setterIsLike(dataLike);
+            setterCollection(likePal, dataLike);
         }
     }
-    React.useEffect((config=config)=>{
+    useEffect(()=>{
         config();
     },[palettes])
     return (

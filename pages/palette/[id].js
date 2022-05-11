@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import { Container, Header, LikeBtn, Palette, Right, Sidebar } from "../../components";
 import { Layout, ConvertHex } from "../../components/function"
 import { useStateContext } from "../../context/StateContext";
@@ -8,7 +8,7 @@ import moment from "moment";
 import Link from 'next/link';
 
 export default function PaletteView({ palette }){
-    const { collection, setCollection, copy, handleCopy, isLike, setIsLike, setPalettes, setLike, like, setQuery, query, copyHexAndRgb, handleCopyHexAndRgb } = useStateContext();
+    const { collection, setCollection, copy, handleCopy, isLike, setIsLike, setPalettes, setLike, like, setQuery, query, copyHexAndRgb, handleCopyHexAndRgb, updatePalettes, checkQueryEmpty, setterLike } = useStateContext();
     const handleLike = async () => {
         if (isLike.includes(palette._id)) {
             if (like[palette.related.length]>0) {
@@ -42,16 +42,12 @@ export default function PaletteView({ palette }){
     function config(){
         if (palette) {
             const palettes = [...palette?.related,palette];
-            setPalettes([...palettes]);
-            setLike(palettes?.map(pal=>pal.like));
-        }else{
-            
+            updatePalettes(palettes);
+            setterLike(palettes);
         }
-        if (query.length>0) {
-            setQuery([]);
-        }
+        checkQueryEmpty();
     }
-    React.useEffect((config=config)=>{
+    useEffect(()=>{
         config();
     },[palette])
     return (

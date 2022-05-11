@@ -1,6 +1,6 @@
 import { Layout } from "../../components/function";
 import { Container, Content, Header, Right, Sidebar } from "../../components";
-import React from "react";
+import { useEffect, useState } from "react";
 import { sanity } from "../../lib/sanity";
 import { getPaletteQuery } from "../../lib/query";
 import { useStateContext } from "../../context/StateContext";
@@ -8,18 +8,18 @@ import { useRouter } from 'next/router';
 import { tags } from "../../assets";
 
 export default function Home({ palettes }) {
-  const { setPalettes, setLike, setLoadingPalettes, tags, setQuery, setTitleRight, setDescriptionRight } = useStateContext();
+  const { tags, updatePalettes, setterLike, updateLoadingPalettes, setterQuery, setterTitleRight, setterDescriptionRight } = useStateContext();
   const router = useRouter();
-  const [title, setTitle] = React.useState('');
+  const [title, setTitle] = useState('');
   function config(){
-    setPalettes(palettes);
-    setLike(palettes.map(pal=>pal.like));
-    setLoadingPalettes(false);
+    updatePalettes(palettes);
+    setterLike(palettes);
+    updateLoadingPalettes(false);
     const dataTag = [];
     router.query.query.split('-').forEach(q => {
-      dataTag.push(...tags.filter(tag=>tag.slug===q));
+      dataTag.push(...tags?.filter(tag=>tag.slug===q));
     });
-    setQuery(dataTag.map(tag=>({ text: tag.title, color: tag.color })));
+    setterQuery(dataTag);
     const judul = [];
     dataTag.map(q=>q.title).forEach(el=>{
       if (el===dataTag[dataTag.length-1].title && dataTag.length>1) {
@@ -30,10 +30,10 @@ export default function Home({ palettes }) {
       }
     })
     setTitle(judul.length > 2 ? judul.join(', ') : judul.join(' '));
-    setTitleRight(`${judul.length > 2 ? judul.join(', ') : judul.join(' ')} Color Palettes`);
-    setDescriptionRight("Find a great color palette from Color Shop's curated collections");
+    setterTitleRight(`${judul.length > 2 ? judul.join(', ') : judul.join(' ')} Color Palettes`);
+    setterDescriptionRight("Find a great color palette from Color Shop's curated collections");
   }
-  React.useEffect((config=config)=>{
+  useEffect(()=>{
     config();
   },[palettes])
   return (
