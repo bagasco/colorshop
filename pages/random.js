@@ -2,25 +2,23 @@ import { Layout } from "../components/function";
 import { Container, Content, Header, Right, Sidebar } from "../components";
 import React from "react";
 import { sanity } from "../lib/sanity";
-import { getPalettes } from "../lib/query";
+import { getPaletteRandom } from "../lib/query";
 import { useStateContext } from "../context/StateContext";
-import useSWRInfinite from 'swr/infinite';
 
 export default function Home({ palettes }) {
   const { setPalettes, setLike, setLoadingPalettes, query, setQuery, setTitleRight, setDescriptionRight } = useStateContext();
-
   React.useEffect(()=>{
     setPalettes(palettes);
     setLoadingPalettes(false);
     setLike(palettes.map(pal=>pal.like));
-    setTitleRight('Color Palettes for Designers and Artists');
-    setDescriptionRight('Discover the newest hand-picked palettes of Color Shop');
+    setTitleRight('Find Color Inspiration');
+    setDescriptionRight('Randomly browse through thousands of beautiful color palettes');
     if (query.length>0) {
       setQuery([]);
     }
   },[])
   return (
-    <Layout title="Color Palettes for Designers and Artists - Color Shop">
+    <Layout title="Random Color Palettes - Color Shop">
       <Container>
         <Header/>
         <Sidebar/>
@@ -32,6 +30,6 @@ export default function Home({ palettes }) {
 }
 
 export async function getServerSideProps() {
-  const palettes = await sanity.fetch(getPalettes);
+  const palettes = await sanity.fetch(getPaletteRandom);
   return { props: { palettes } }
 }

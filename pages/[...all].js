@@ -4,11 +4,9 @@ import React from "react";
 import { sanity } from "../lib/sanity";
 import { getPalettes } from "../lib/query";
 import { useStateContext } from "../context/StateContext";
-import useSWRInfinite from 'swr/infinite';
 
 export default function Home({ palettes }) {
   const { setPalettes, setLike, setLoadingPalettes, query, setQuery, setTitleRight, setDescriptionRight } = useStateContext();
-
   React.useEffect(()=>{
     setPalettes(palettes);
     setLoadingPalettes(false);
