@@ -7,15 +7,18 @@ import { useStateContext } from "../context/StateContext";
 import InfiniteScroll  from "react-infinite-scroller";
 
 export default function Home({ palettes }) {
-  const { updatePalettes, updateLoadingPalettes, setterLike, setterTitleRight, setterDescriptionRight, checkQueryEmpty, setPalettes } = useStateContext();
+  const { updatePalettes, updateLoadingPalettes, setterLike, setterTitleRight, setterDescriptionRight, checkQueryEmpty, setPalettes, like } = useStateContext();
   const [count, setCount] = useState(20);
   const [more, setMore] = useState(false);
+  const [dataPalettes, setDataPalettes] = useState([]);
   const fetchData = () => {
     setMore(false);
     sanity.fetch(getPalettes(count,count+20))
     .then(data=>{
         if (data.length>0) {
-            setPalettes(old=>[...old,...data])
+            setPalettes(old=>[...old,...data]);
+            setterLike([...dataPalettes,...data]);
+            setDataPalettes(old=>[...old,...data]);
             setCount(count+20);
             setMore(true);
         }else{
@@ -26,6 +29,7 @@ export default function Home({ palettes }) {
   useEffect(()=>{
     updatePalettes(palettes);
     setterLike(palettes);
+    setDataPalettes(palettes);
     updateLoadingPalettes(false);
     setterTitleRight('Color Palettes for Designers and Artists');
     setterDescriptionRight('Discover the newest hand-picked palettes of Color Shop');

@@ -14,12 +14,15 @@ export default function Home({ palettes, queryArray }) {
   const [title, setTitle] = useState('');
   const [count, setCount] = useState(20);
   const [more, setMore] = useState(false);
+  const [dataPalettes, setDataPalettes] = useState([]);
   const fetchData = () => {
     setMore(false);
     sanity.fetch(getPaletteQuery(queryArray,count,count+20))
     .then(data=>{
         if (data.length>0) {
-            setPalettes(old=>[...old,...data])
+            setPalettes(old=>[...old,...data]);
+            setterLike([...dataPalettes,...data]);
+            setDataPalettes(old=>[...old,...data]);
             setCount(count+20);
             setMore(true);
         }else{
@@ -30,6 +33,7 @@ export default function Home({ palettes, queryArray }) {
   function config(){
     updatePalettes(palettes);
     setterLike(palettes);
+    setDataPalettes(palettes);
     updateLoadingPalettes(false);
     const dataTag = [];
     router.query.query.split('-').forEach(q => {
