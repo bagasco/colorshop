@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Container, Header, LikeBtn, Palette, Right, Sidebar } from "../../components";
 import { Layout, ConvertHex } from "../../components/function"
 import { useStateContext } from "../../context/StateContext";
@@ -6,14 +6,35 @@ import { getPaletteById } from "../../lib/query";
 import { sanity } from "../../lib/sanity";
 import moment from "moment";
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import InfiniteScroll  from "react-infinite-scroller";
 
 export default function PaletteView({ palette }){
-    const { collection, setCollection, copy, handleCopy, isLike, setIsLike, setLike, like, copyHexAndRgb, handleCopyHexAndRgb, updatePalettes, checkQueryEmpty, setterLike } = useStateContext();
+    const { collection, setCollection, copy, handleCopy, isLike, setIsLike, setLike, like, copyHexAndRgb, handleCopyHexAndRgb, updatePalettes, checkQueryEmpty, setterLike, setPalettes } = useStateContext();
+    const { query: { id } } = useRouter();
+    const [count, setCount] = useState(20);
+    const [more, setMore] = useState(false);
+    const [postRelated, setPostRelated] = useState([]);
+    const fetchData = () => {
+        setMore(false);
+        sanity.fetch(getPaletteById(id,count,count+20))
+        .then(data=>{
+            if (data.related.length>0) {
+                setPalettes([,...postRelated,...data.related,palette]);
+                setterLike([,...postRelated,...data.related,palette]);
+                setPostRelated(old=>[...old,...data.related]);
+                setCount(count+20);
+                setMore(true);
+            }else{
+                setMore(false);
+            }
+        });
+    }
     const handleLike = async () => {
         if (isLike.includes(palette._id)) {
-            if (like[palette.related.length]>0) {
+            if (like[postRelated.length]>0) {
                 setIsLike(isLike.filter(data=>data!==palette._id));
-                like[palette.related.length] = like[palette.related.length]-1;
+                like[postRelated.length] = like[postRelated.length]-1;
                 setLike(like);
                 localStorage.setItem('myCollection', isLike.length>1 ?  JSON.stringify(isLike.filter(data=>data!==palette._id).join(',')) : JSON.stringify(isLike.filter(data=>data!==palette._id).join(' ')));
                 setCollection(collection.filter(col=>col._id!==palette._id));
@@ -24,7 +45,7 @@ export default function PaletteView({ palette }){
             }
         }else{
             setIsLike([...isLike,palette._id]);
-            like[palette.related.length] = like[palette.related.length]+1;
+            like[postRelated.length] = like[postRelated.length]+1;
             setLike(like);
             localStorage.setItem('myCollection', JSON.stringify([palette._id,...isLike].length>1 ? [palette._id,...isLike].join(',') : [palette._id,...isLike].join('')));
             const logo = document.getElementById('logo');
@@ -41,14 +62,17 @@ export default function PaletteView({ palette }){
     }
     function config(){
         if (palette) {
-            const palettes = [...palette?.related,palette];
+            const palettes = [...palette.related,palette];
             updatePalettes(palettes);
             setterLike(palettes);
+            setPostRelated(palette.related);
         }
         checkQueryEmpty();
     }
     useEffect(()=>{
         config();
+        setMore(true);
+        setCount(20);
     },[palette])
     return (
         <Layout title={`Color Palette: ${palette?.color.map(col=>`#${col}`).join(' ')} - Color Shop`}>
@@ -94,7 +118,7 @@ export default function PaletteView({ palette }){
                         </div>
                         <div className="flex justify-between items-center mt-4">
                             <div className="flex gap-2">
-                                <LikeBtn handleLike={handleLike} palette={palette} isLike={isLike} dataLike={like[palette.related.length]}/>
+                                <LikeBtn handleLike={handleLike} palette={palette} isLike={isLike} dataLike={like[postRelated.length]}/>
                                 <div onClick={()=>handleCopy(window.location.href)} className="flex hover:bg-gray-50 cursor-pointer transition items-center overflow-hidden gap-2 border px-3 py-1 rounded-lg relative">
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -152,16 +176,22 @@ export default function PaletteView({ palette }){
                                 ))}
                             </div>
                         </div>
-                        {palette.related.length>0 && (
+                        <InfiniteScroll
+                            pageStart={0}
+                            loadMore={fetchData}
+                            hasMore={more}
+                        >
+                        {postRelated.length>0 && (
                             <div className="pt-10">
                                 <h1 className="text-center font-medium text-lg mb-10">Related palettes</h1>
                                 <div className="grid grid-cols-2 gap-4 sm:gap-5 xl:gap-7 xl:grid-cols-3">
-                                    {palette.related.map((palette,i)=>(
+                                    {postRelated.map((palette,i)=>(
                                         <Palette key={palette._id} index={i} palette={palette}/>
                                     ))}
                                 </div>
                             </div>
                         )}
+                        </InfiniteScroll>
                     </div>
                 </div>
                 )}
@@ -173,6 +203,6 @@ export default function PaletteView({ palette }){
 
 export async function getServerSideProps(params){
     const { id } = params.query;
-    const palette = await sanity.fetch(getPaletteById(id));
+    const palette = await sanity.fetch(getPaletteById(id,0,20));
     return { props: { palette } }
 }
